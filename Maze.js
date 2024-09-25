@@ -1,15 +1,15 @@
 import Cell from "./Cell.js";
 
 export default class Maze {
-    constructor(width, height) {
+    constructor(width, height, wallTime, randomWall) {
         this.width = width;
         this.height = height;
         this.cells = [];
         this.stack = [];
         this.visitedCells = [];
         this.initializeCells();
-        this.drawDelay = 3;
-        this.randomOpeningWallsPercentage = 0.3;
+        this.drawDelay = wallTime;
+        this.randomOpeningWallsPercentage = randomWall/100.0;
     }
 
     initializeCells() {
@@ -38,7 +38,7 @@ export default class Maze {
             // neighbor && console.log('neg: ', neighbor.cell.x, neighbor.cell.y)
 
             if (neighbor) {
-                await new Promise((r) => setTimeout(r, this.drawDelay));
+                this.drawDelay != 0 && await new Promise((r) => setTimeout(r, this.drawDelay));
                 this.visitedCells.push(neighbor.cell);
                 this.stack.push(neighbor.cell);
                 neighbor.cell.visited = true;
@@ -75,7 +75,7 @@ export default class Maze {
 
         await this.openRandomWalls(parseInt(this.width * this.height) * this.randomOpeningWallsPercentage);
         // await this.drawMaze();
-            // this.draw2DMap();
+        // this.draw2DMap();
     }
 
     getRandomNeighbor(x, y) {
@@ -129,29 +129,34 @@ export default class Maze {
 
     draw2DMap() {
         let map = [];
-        let mapWidth = this.width*2+1;
-        let mapHeight = this.height*2+1;
+        let mapWidth = this.width * 2 + 1;
+        let mapHeight = this.height * 2 + 1;
         let wall = 1;
         let open = 0;
-        for(let h = 0; h < mapHeight; h++){
+        for (let h = 0; h < mapHeight; h++) {
             map.push(Array(mapWidth).fill(wall))
         }
 
-        for(let x = 1, cX = 0; x < mapWidth; x+=2, cX++) {
-            for(let y = 1, cY = 0; y < mapHeight; y+=2, cY++) {
+        for (let x = 1, cX = 0; x < mapWidth; x += 2, cX++) {
+            for (let y = 1, cY = 0; y < mapHeight; y += 2, cY++) {
                 let { right, bottom } = this.cells[cX][cY].walls;
                 map[y][x] = open;
                 // if can go right
-                !right && (map[y][x+1] = open);
+                !right && (map[y][x + 1] = open);
                 // if can go down
-                !bottom && (map[y+1][x] = open);
+                !bottom && (map[y + 1][x] = open);
                 // fill extra space
-                // (false) && (map[y+1][x+1] = open);
+                !(
+                    right || bottom ||
+                    this.cells[cX + 1][cY].walls.bottom ||
+                    this.cells[cX][cY + 1].walls.right
+
+                ) && (map[y + 1][x + 1] = open);
             }
         }
 
         // print 2d map
-        for(let row of map){
+        for (let row of map) {
             console.log(row.join(' '));
             // console.log(Array(this.width*2+1).fill('-'))
         }
@@ -161,31 +166,31 @@ export default class Maze {
     async openRandomWalls(count) {
         let openedCells = [];
         let infinite = 0;
-    
+
         while (count-- > 0) {
             // Get random cell index
             let randX = Math.floor(Math.random() * (this.width - 1));
             let randY = Math.floor(Math.random() * (this.height - 1));
-    
+
             // Check if random cell has already been selected before
             const filter = openedCells.filter(c => c.x === randX && c.y === randY);
             // console.log("randX: ", randX, "   randY: ", randY);
-    
+
             // Extract the walls of the selected cell
             let { top, left, right, bottom } = this.cells[randX][randY].walls;
             let dir = [];
-    
+
             top && dir.push('top');
             left && dir.push('left');
             right && dir.push('right');
             bottom && dir.push('bottom');
 
             // if loop going infinitely
-            if(infinite > (this.width*this.height)){
+            if (infinite > (this.width * this.height)) {
                 console.log("Maze generation is taking too long, stoped process");
                 break;
             }
-    
+
             // Skip if the cell was previously selected or only one wall remains
             if (filter.length > 0 || dir.length === 3) {
                 infinite++;
@@ -193,20 +198,21 @@ export default class Maze {
                 continue;
             }
             infinite = 0;
-    
+
             // Randomly pick a wall to open
             let randWall = dir[Math.floor(Math.random() * dir.length)];
-    
+
             // Update the wall to be 'false' (open) in the selected direction
             this.cells[randX][randY].walls = { ...this.cells[randX][randY].walls, [randWall]: false };
-    
+
             // Mark this cell as selected and await drawing
             openedCells.push({ x: randX, y: randY });
-            await new Promise((r) => setTimeout(r, this.drawDelay));
+
+            this.drawDelay != 0 && await new Promise((r) => setTimeout(r, this.drawDelay));
             await this.drawCell(this.cells[randX][randY]);
         }
     }
-    
+
 
     printMaze() {
 

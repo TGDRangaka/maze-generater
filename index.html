@@ -1,51 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maze</title>
 
-    <style>
-        *{
-            /* box-sizing: border-box; */
-            margin: 0;
-            padding: 0;
-        }
-        body{
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            /* flex-direction: column; */
-            gap: 20px;
-            background-color: black;
-        }
+    <link rel="stylesheet" href="style.css">
 
-        #root{
-            /* border: 1px solid white; */
-            display: grid;
-        }
-
-        #root div{
-            width: 20px;
-            aspect-ratio: 1;
-            background-color: #ffffff;
-            /* border: 1px solid rgb(255, 255, 255); */
-            border-right: 1px solid white;
-            border-bottom: 1px solid white;
-            /* border-width: 1px; */
-            /* border-radius: 5px; */
-        }
-    </style>
 </head>
-<body>
-    <div id="root"></div>
 
+<body>
+    <!-- form inputs for maze -->
+    <div class="header-bar">
+        <h1>Maze Generator</h1>
+        <form id="mazeForm" class="maze-form">
+            <div class="form-group">
+                <label for="rows">Rows:</label>
+                <input type="number" id="rows" name="rows" min="1" value="10" required />
+            </div>
+
+            <div class="form-group">
+                <label for="columns">Columns:</label>
+                <input type="number" id="columns" name="columns" min="1" value="10" required />
+            </div>
+
+            <div class="form-group">
+                <label for="wallWidth">Wall Width (px):</label>
+                <input type="number" id="wallWidth" name="wallWidth" min="1" value="15" required />
+            </div>
+
+            <div class="form-group">
+                <label for="wallTime">Wall Creating Time (ms):</label>
+                <input type="number" id="wallTime" name="wallTime" min="0" value="10" required />
+            </div>
+
+            <div class="form-group">
+                <label for="randomWall">Random Wall Open %:</label>
+                <input type="number" id="randomWall" name="randomWall" min="0" max="100" value="20" required />
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="generate-btn">Generate Maze</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="root"></div>
     <canvas id="canvas"></canvas>
 
     <!-- jquery -->
-     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script type="module" src="main.js"></script>
 </body>
+
 </html>

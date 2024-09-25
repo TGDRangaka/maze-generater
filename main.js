@@ -10,73 +10,71 @@ const rootDiv = document.getElementById('root');
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
 
-const width = 20;
-const height = 20;
-const recleWidth = 16;
 
-canvas.width = (width * 2 + 1) * recleWidth;
-canvas.height = (height * 2 + 1) * recleWidth;
-
-// canvas bg white
-
-c.fillStyle = 'white';
-c.fillRect(0, 0, canvas.width, canvas.height);
-
-$('#root').css('grid-template-columns', `repeat(${width}, 1fr)`)
-$('#root').css('grid-template-rows', `repeat(${height}, 1fr)`)
-
-for (let i = 0; i < height; i++) {
-    for (let j = 0; j < width; j++) {
-        $('#root').append(`
-            <div id="cell-${j}-${i}" class="cell"></div>
-        `);
-    }
-}
-
-const drawMaze = async (width, height) => {
-    const maze = new Maze(width, height);
-    await maze.generateMaze(0, 0);
-    // maze.generateMaze(width / 2, height / 2);
-
-    let map = maze.draw2DMap();
-    drawCanvas(map);
-}
-
-drawMaze(width, height);
 let boundaries = [];
 
-const drawCanvas = async (map) => {
+
+const drawMaze = async (width, height, wallWidth, wallTime, randomWall) => {
+    // give divs a grid layout
+    $('#root').empty();
+    $('#root').css('grid-template-columns', `repeat(${width}, 1fr)`)
+    $('#root').css('grid-template-rows', `repeat(${height}, 1fr)`)
+    for (let i = 0; i < height; i++) {
+        for (let j = 0; j < width; j++) {
+            $('#root').append(`
+                <div id="cell-${j}-${i}" style="width: ${wallWidth*2}px; height: ${wallWidth*2}px;" class="cell"></div>
+            `);
+        }
+    }
+
+    // setup canvas
+    canvas.width = (width * 2 + 1) * wallWidth;
+    canvas.height = (height * 2 + 1) * wallWidth;
+    // canvas bg white
+    c.fillStyle = 'white';
+    c.fillRect(0, 0, canvas.width, canvas.height);
+
+    const maze = new Maze(width, height, wallTime, randomWall);
+    await maze.generateMaze(0, 0);
+    // await maze.generateMaze(width / 2, height / 2);
+
+    let map = maze.draw2DMap();
+    drawCanvas(map, wallWidth, wallTime);
+}
+
+
+const drawCanvas = async (map, cellSize, wallTime) => {
     let map_height = map.length;
     let map_width = map[0].length;
-    console.log(map_height, map_width);
+    boundaries = [];
 
     for (let i = 0; i < map_height; i++) {
         for (let j = 0; j < map_width; j++) {
             if (map[i][j] === 0) {
                 // assign background tileset
                 c.fillStyle = 'white';
-                c.fillRect(j*recleWidth, i*recleWidth, recleWidth, recleWidth);
+                c.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
             } else {
                 // assign wall tileset(box)
-                await new Promise((r) => setTimeout(r, 3));
+                wallTime != 0 && await new Promise((r) => setTimeout(r, wallTime));
 
                 const img = new Image();
                 img.src = '/barel.png';
                 c.drawImage(
                     img,
-                    j * recleWidth,
-                    i * recleWidth
+                    j * cellSize,
+                    i * cellSize
                 )
                 let boundary = new Boundary(
-                    { x: j * recleWidth, y: i * recleWidth },
-                    recleWidth,
+                    { x: j * cellSize, y: i * cellSize },
+                    cellSize,
                     img,
                     c
                 )
                 boundaries.push(boundary);
 
                 // c.fillStyle = 'white';
-                // c.fillRect(j*recleWidth, i*recleWidth, recleWidth, recleWidth);
+                // c.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
             }
         }
     }
@@ -87,3 +85,27 @@ const animate = () => {
     boundaries.forEach(boundary => boundary.draw());
 }
 animate();
+
+$(document).ready(function () {
+    $('#mazeForm').on('submit', function (e) {
+        e.preventDefault(); // Prevent the default form submission
+
+        // Get form data
+        const rows = $('#rows').val();
+        const columns = $('#columns').val();
+        const wallWidth = $('#wallWidth').val();
+        const wallTime = $('#wallTime').val();
+        const randomWall = $('#randomWall').val();
+
+        // Log the data to the console or use it as needed
+        console.log('Rows:', rows);
+        console.log('Columns:', columns);
+        console.log('Wall Width (px):', wallWidth);
+        console.log('Wall Creating Time (ms):', wallTime);
+        console.log('Random Wall Open %:', randomWall);
+
+        // You can now use the values to generate your maze
+        // Example:
+        drawMaze(columns, rows, wallWidth, wallTime, randomWall);
+    });
+});

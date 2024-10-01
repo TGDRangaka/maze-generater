@@ -8,13 +8,22 @@ const rootDiv = document.getElementById('root');
 
 // set up canvas
 const canvas = document.querySelector('canvas');
-const c = canvas.getContext('2d');
-
+let c = canvas.getContext('2d');
+var isGenerating = false;
 
 let boundaries = [];
 
 
 const drawMaze = async (width, height, wallWidth, wallTime, randomWall) => {
+    // If another maze generation is already in progress, cancel it
+    if (isGenerating) {
+        console.log("Stopping the previous maze generation...");
+        isGenerating = false;
+        return;
+    }
+    // Start the new maze generation
+    isGenerating = true;
+
     // give divs a grid layout
     $('#root').empty();
     $('#root').css('grid-template-columns', `repeat(${width}, 1fr)`)
@@ -28,6 +37,7 @@ const drawMaze = async (width, height, wallWidth, wallTime, randomWall) => {
     }
 
     // setup canvas
+    boundaries = [];
     canvas.width = (width * 2 + 1) * wallWidth;
     canvas.height = (height * 2 + 1) * wallWidth;
     // canvas bg white
@@ -39,7 +49,12 @@ const drawMaze = async (width, height, wallWidth, wallTime, randomWall) => {
     // await maze.generateMaze(width / 2, height / 2);
 
     let map = maze.draw2DMap();
-    drawCanvas(map, wallWidth, wallTime);
+    if (isGenerating) {
+        await drawCanvas(map, wallWidth, wallTime);
+    }
+
+    // Mark generation as completed
+    isGenerating = false;
 }
 
 
@@ -50,6 +65,11 @@ const drawCanvas = async (map, cellSize, wallTime) => {
 
     for (let i = 0; i < map_height; i++) {
         for (let j = 0; j < map_width; j++) {
+            if (!isGenerating) {
+                console.log("Maze generation stopped.");
+                return;
+            }
+
             if (map[i][j] === 0) {
                 // assign background tileset
                 c.fillStyle = 'white';
@@ -59,7 +79,7 @@ const drawCanvas = async (map, cellSize, wallTime) => {
                 wallTime != 0 && await new Promise((r) => setTimeout(r, wallTime));
 
                 const img = new Image();
-                img.src = '/barel.png';
+                img.src = './barel.png';
                 c.drawImage(
                     img,
                     j * cellSize,
@@ -104,8 +124,10 @@ $(document).ready(function () {
         console.log('Wall Creating Time (ms):', wallTime);
         console.log('Random Wall Open %:', randomWall);
 
+        // Stop ongoing process if it's running
+        // isGenerating = false;
+
         // You can now use the values to generate your maze
-        // Example:
         drawMaze(columns, rows, wallWidth, wallTime, randomWall);
     });
 });

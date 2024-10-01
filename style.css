@@ -31,7 +31,7 @@ body {
 
 .maze-form {
     display: flex;
-    gap: 20px;
+    gap: 13px;
     align-items: center;
 }
 
@@ -44,6 +44,7 @@ body {
     outline: none;
     width: 80px;
     text-align: center;
+    border-right: 3px solid white;
 }
 
 .maze-form input[type="number"]::-webkit-inner-spin-button {
@@ -51,9 +52,65 @@ body {
 }
 
 .maze-form label {
-    margin-right: 10px;
+    margin-right: 0px;
     font-size: 14px;
 }
+
+/* Tooltip styling */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.tooltip .tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 10px;
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    /* Position the tooltip below the info icon */
+    left: 50%;
+    margin-left: -100px;
+    /* Center the tooltip */
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltip .tooltip-text::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    /* Arrow at the top of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #555 transparent;
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+.info-icon {
+    display: inline-block;
+    margin-left: 5px;
+    background-color: #666;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 5px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+
 
 .generate-btn {
     padding: 10px 20px;

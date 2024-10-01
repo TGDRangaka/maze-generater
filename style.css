@@ -160,3 +160,106 @@ body {
         height: 15px;
     }
 }
+@media (max-width: 768px) {
+    /* Tablet styling */
+    body {
+        padding-top: 60px;
+    }
+
+    .header-bar {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    .maze-form {
+        max-width: 90%;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .maze-form input {
+        width: 100%;
+        font-size: 14px;
+    }
+
+    .maze-form label {
+        font-size: 12px;
+    }
+
+    .generate-btn {
+        padding: 8px 15px;
+        font-size: 12px;
+    }
+
+    #root {
+        grid-template-columns: repeat(auto-fit, 15px);
+        grid-template-rows: repeat(auto-fit, 15px);
+    }
+
+    #root div {
+        width: 15px;
+        height: 15px;
+    }
+
+    .tooltip .tooltip-text {
+        font-size: 12px;
+    }
+
+    .tooltip .tooltip-text::after {
+        margin-left: -5px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Mobile styling */
+    body {
+        padding-top: 0px;
+        flex-direction: column;
+        justify-content: start;
+        padding-bottom: 10px;
+    }
+
+    .header-bar {
+        padding: 8px 15px;
+        font-size: 12px;
+        position: relative;
+    }
+
+    .maze-form {
+        max-width: 100%;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .maze-form input {
+        width: 100%;
+        font-size: 12px;
+    }
+
+    .maze-form label {
+        font-size: 10px;
+    }
+
+    .generate-btn {
+        padding: 7px 10px;
+        font-size: 10px;
+    }
+
+    #root {
+        grid-template-columns: repeat(auto-fit, 12px);
+        grid-template-rows: repeat(auto-fit, 12px);
+    }
+
+    #root div {
+        width: 12px;
+        height: 12px;
+    }
+
+    .tooltip .tooltip-text {
+        font-size: 10px;
+    }
+
+    .tooltip .tooltip-text::after {
+        margin-left: -4px;
+    }
+}
